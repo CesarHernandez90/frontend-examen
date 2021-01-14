@@ -1,5 +1,5 @@
-
+import { Button } from "@material-ui/core";
 
 export default function Store() {
-    return <h1>Store Page</h1>
+    return <Button variant="contained" color="primary">Primary</Button>
 }
