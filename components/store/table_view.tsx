@@ -13,6 +13,7 @@ import { useState } from "react";
 
 import { LISTAR_PRODUCTOS, ELIMINAR_PRODUCTO } from "../../config/api"
 import IProduct from "../../models/product"
+import DialogView from './dialog_view';
 
 export default function TableView({products}:{products:IProduct[]}) {
 
@@ -67,11 +68,12 @@ export default function TableView({products}:{products:IProduct[]}) {
                                     <TableCell>{product.ProductQuantity}</TableCell>
                                     <TableCell>{product.NameProduct}</TableCell>
                                     <TableCell>{product.Category}</TableCell>
-                                    <TableCell align="right">
-                                        <Button variant="contained" color="primary" className="mr-2">Editar</Button>
-                                        <Button variant="contained" color="secondary" onClick={() => deleteProduct(product._id)}>
+                                    <TableCell align="right" className="d-flex align-items-center">
+                                        <Button variant="contained" color="secondary" className="ml-2" 
+                                            onClick={() => deleteProduct(product._id)}>
                                             Eliminar
                                         </Button>
+                                        <DialogView product={product}></DialogView>
                                     </TableCell>
                                 </TableRow>
                             ))

@@ -7,11 +7,11 @@ export default function NavbarComponent() {
         <AppBar position="sticky">
             <Container>
                 <Toolbar>
-                    <Link color="inherit" href="/">
-                        <Button color="inherit">Nombre Candidato</Button>
+                    <Link color="inherit" href="/" className="navbar-item">
+                        NOMBRE CANDIDATO
                     </Link>
-                    <Link color="inherit" href="/store">
-                        <Button color="inherit">Store</Button>
+                    <Link color="inherit" href="/store" className="navbar-item">
+                        STORE
                     </Link>    
                 </Toolbar>
             </Container>

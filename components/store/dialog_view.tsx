@@ -11,10 +11,13 @@ import {
 
 import { useState } from "react";
 import { useFormik } from "formik";
-import useSWR, { mutate } from "swr"
-import { CREAR_PRODUCTO, LISTAR_PRODUCTOS } from "../../config/api";
+import useSWR, { mutate, trigger } from "swr"
+import { CREAR_PRODUCTO, EDITAR_PRODUCTO, LISTAR_PRODUCTOS } from "../../config/api";
+import IProduct from "../../models/product";
 
-export default function DialogView() {
+export default function DialogView(
+    {product}:{product?:IProduct}) 
+{
 
     /* Caché */
     const {data} = useSWR(LISTAR_PRODUCTOS);
@@ -40,22 +43,26 @@ export default function DialogView() {
     /* Formik Functions */
     const formik = useFormik({
         initialValues: {
-            NameProduct: '',
-            ProductQuantity: '',
-            Description: '',
-            Category: 'Bebidas',
+            NameProduct: product ? product.NameProduct : '',
+            ProductQuantity: product ? product.ProductQuantity : '',
+            Description: product ? product.Description : '',
+            Category: product ? product.Category : 'Bebidas',
         },
         onSubmit: async values => {
-            const res = await fetch(CREAR_PRODUCTO, {
-                method: 'post',
+            const res = await fetch(product ? (EDITAR_PRODUCTO + '/' + product._id) : CREAR_PRODUCTO, {
+                method: product ? 'put' : 'post',
                 body: JSON.stringify(values),
                 headers: {'Content-Type': 'application/json'}
             })
             if(res.ok) {
                 const product = res.json();
-                mutate(LISTAR_PRODUCTOS, [...data, product])
-                formik.resetForm()
+                if(product) {
+                    trigger(LISTAR_PRODUCTOS)
+                } else {
+                    mutate(LISTAR_PRODUCTOS, [...data, product])
+                }
                 setOpen(false)
+                formik.resetForm()
             }
         },
         validate: values => {
@@ -75,14 +82,19 @@ export default function DialogView() {
 
     return (
         <div>
-            <Button variant="outlined" color="primary" onClick={handleOpen}>
-                Nuevo producto
+            <Button variant={product ? 'contained' : 'outlined'} color="primary" onClick={handleOpen}>
+                {product ? 'Editar' : 'Nuevo producto'}
             </Button>
             <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
                 <form onSubmit={formik.handleSubmit}>
-                    <DialogTitle id="form-dialog-title" className="pb-0">Registrar nuevo producto</DialogTitle>
+                    <DialogTitle id="form-dialog-title" className="pb-0">
+                        {product ? 'Editar ' + product.NameProduct : 'Registrar nuevo producto'}
+                    </DialogTitle>
                     <DialogContent>
-                        <DialogContentText className="mb-4">Llene los campos para completar su registro</DialogContentText>
+                        <DialogContentText className="mb-4">
+                            {product ? 'Realice los cambios y haga clic en guardar cambios.'
+                                : 'Llene los campos para completar su registro.'}
+                        </DialogContentText>
                         <TextField 
                             className="mb-3"
                             id="NameProduct" 
@@ -146,10 +158,14 @@ export default function DialogView() {
                     </DialogContent>
                     <DialogActions>
                         <div style={{flex: '1 0 0'}} >
-                            <Button className="ml-3" onClick={handleClean}>Limpiar campos</Button>
+                            <Button className="ml-3" onClick={handleClean}>
+                                {product ? 'Restablecer' : 'Limpiar campos'}
+                            </Button>
                         </div>
                         <Button onClick={handleClose} color="default" variant="outlined">Cancelar</Button>
-                        <Button type="submit" color="primary" variant="outlined" className="mr-3">Aceptar</Button>
+                        <Button type="submit" color="primary" variant="outlined" className="mr-3">
+                            {product ? 'Guardar cambios' : 'Registrar'}
+                        </Button>
                     </DialogActions>
                 </form>
             </Dialog>

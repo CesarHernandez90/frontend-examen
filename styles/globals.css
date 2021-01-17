@@ -17,3 +17,11 @@ a {
   box-sizing: border-box;
 }
 
+.navbar-item {
+  text-decoration: none !important;
+  padding: 16px;
+}
+
+.navbar-item:hover {
+  color: rgb(182, 255, 255);
+}
