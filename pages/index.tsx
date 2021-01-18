@@ -12,10 +12,11 @@ import Head from 'next/head';
 import Link from '../src/Link'
 import LayoutComponent from '../components/layout_component';
 
+
 export default function Index() {
 	return (
 		<LayoutComponent>
-            <Head><title>Candidato</title></Head>
+            <Head><title>NOMBRE CANDIDATO</title></Head>
 			<Card>
                 <CardContent>
                     <Typography variant="h4">Información del candidato</Typography>

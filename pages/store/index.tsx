@@ -11,8 +11,9 @@ import useSWR from 'swr';
 import { Alert } from '@material-ui/lab';
 import { Collapse, IconButton } from "@material-ui/core";
 import CloseIcon from '@material-ui/icons/Close';
+import Head from 'next/head';
 
-import { Button, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 
 export default function Store(
     {products, isLoading, isError}
@@ -39,6 +40,7 @@ export default function Store(
     
     return (
         <div>
+            <Head><title>STORE</title></Head>
             <LayoutComponent>
                 <div className="d-flex justify-content-between align-items-center">
                     <Typography variant="h5">Productos</Typography>
@@ -46,7 +48,7 @@ export default function Store(
                 </div>
                 <hr/>
                 <Collapse in={openAlert}>
-                    <Alert severity={severity as any} action={
+                    <Alert severity={severity as any} className="mb-3" action={
                         <IconButton
                             aria-label="close"
                             color="inherit"

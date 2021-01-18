@@ -82,9 +82,11 @@ export default function DialogView(
             let errors:any = {};
 
             if(!values.NameProduct) errors.NameProduct = 'Requerido'
+            else if(values.NameProduct.length > 150) errors.NameProduct = 'No puede ser mayor de 150 caracteres'
             if(!values.ProductQuantity) errors.ProductQuantity = 'Requerido'
-            else if(Number(values.ProductQuantity) < 0) errors.ProductQuantity = 'Debe ser mayor que 0'
+            else if(Number(values.ProductQuantity) < 0 || Number(values.ProductQuantity) > 100) errors.ProductQuantity = 'Debe ser un número entre 0 y 100'
             if(!values.Description) errors.Description = 'Requerido'
+            else if(values.Description.length > 450) errors.Description = 'No puede ser mayor de 450 caracteres'
 
             return errors;
         },

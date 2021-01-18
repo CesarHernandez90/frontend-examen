@@ -24,10 +24,11 @@ export default function TableView(
 ) {
     /* Columnas */
     const columns = [
-        { id: 'ProductQuantity', label: 'Cantidad'},
-        { id: 'NameProduct', label: 'Nombre del producto'},
-        { id: 'Category', label: 'Categoría'},
-        { id: 'actions', label: ''},
+        { id: 'ProductQuantity', label: 'Cantidad', class: 'd-none d-md-table-cell'},
+        { id: 'NameProduct', label: 'Nombre del producto', class: ''},
+        { id: 'Category', label: 'Categoría', class: 'd-none d-sm-table-cell'},
+        { id: 'Description', label: 'Descripción', class: 'd-none d-lg-table-cell'},
+        { id: 'actions', label: '', class: ''},
     ]
 
     /* Categorías */
@@ -95,7 +96,7 @@ export default function TableView(
                     <TableHead>
                         <TableRow>
                             {columns.map((column) => (
-                                <TableCell key={column.id}>
+                                <TableCell key={column.id} className={column.class}>
                                     {column.label}
                                 </TableCell>
                             ))}
@@ -105,9 +106,10 @@ export default function TableView(
                         {products.slice(page * rowsPerPage, page* rowsPerPage + rowsPerPage)
                             .map((product, index) => (
                                 <TableRow key={product._id}>
-                                    <TableCell>{product.ProductQuantity}</TableCell>
+                                    <TableCell className="d-none d-md-table-cell">{product.ProductQuantity}</TableCell>
                                     <TableCell>{product.NameProduct}</TableCell>
-                                    <TableCell>{product.Category}</TableCell>
+                                    <TableCell className="d-none d-sm-table-cell">{product.Category}</TableCell>
+                                    <TableCell className="d-none d-lg-table-cell">{product.Description}</TableCell>
                                     <TableCell align="right" className="d-flex align-items-center">
                                         <AlertView id={product._id} name={product.NameProduct} handleOpenAlert={handleOpenAlert}></AlertView>
                                         <DialogView product={product} handleOpenAlert={handleOpenAlert}></DialogView>
