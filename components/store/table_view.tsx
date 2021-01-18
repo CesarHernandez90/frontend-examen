@@ -7,18 +7,21 @@ import {
     TableCell,
     TablePagination,
     Grid,
+    TextField,
+    MenuItem,
 } from "@material-ui/core"
 import { useState } from "react";
 
 import IProduct from "../../models/product"
 import DialogView from './dialog_view';
 import AlertView from './alert_view';
+import useSWR, { mutate, trigger } from "swr";
+import { LISTAR_PRODUCTOS } from "../../config/api";
 
 export default function TableView(
     {products, handleOpenAlert}
     :{products:IProduct[], handleOpenAlert: any}
 ) {
-
     /* Columnas */
     const columns = [
         { id: 'ProductQuantity', label: 'Cantidad'},
@@ -26,6 +29,15 @@ export default function TableView(
         { id: 'Category', label: 'Categoría'},
         { id: 'actions', label: ''},
     ]
+
+    /* Categorías */
+    const categories = [
+        { value: 'Todas', label: 'Todas'},
+        { value: 'Bebidas', label: 'Bebidas'},
+        { value: 'Limpieza', label: 'Limpieza'},
+        { value: 'Botanas', label: 'Botanas'},
+        { value: 'Cremería', label: 'Cremería'},
+    ];
 
     /* Paginación */
     const [page, setPage] = useState(0);
@@ -40,9 +52,44 @@ export default function TableView(
     const emptyRows = rowsPerPage == 5 || rowsPerPage == 7 
         ? rowsPerPage - Math.min(rowsPerPage, products.length - page * rowsPerPage) : 0
 
+    /* Api Functions */
+    const {data} = useSWR(LISTAR_PRODUCTOS);
+
+    const [category, setCategory] = useState('Todas')
+    const handleChangeCategory = (event) => {
+        setCategory(event.target.value)
+    }
+
     return (
         <div>
-
+            <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                    <TextField
+                        className="mb-3"
+                        id="Category"
+                        name="Category" 
+                        select
+                        label="Categoría"
+                        fullWidth
+                        defaultValue="Todas"
+                        value={category}
+                        onChange={handleChangeCategory} 
+                        variant="outlined">
+                        {categories.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <TextField id="outlined-search" 
+                        label="Nombre del producto" 
+                        type="search" 
+                        variant="outlined" 
+                        fullWidth/>
+                </Grid>
+            </Grid>
             <TableContainer>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
