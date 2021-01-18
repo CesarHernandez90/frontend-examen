@@ -6,16 +6,18 @@ import {
     TableRow,
     TableCell,
     TablePagination,
-    Button,
+    Grid,
 } from "@material-ui/core"
-import { mutate } from "swr"
 import { useState } from "react";
 
-import { LISTAR_PRODUCTOS, ELIMINAR_PRODUCTO } from "../../config/api"
 import IProduct from "../../models/product"
 import DialogView from './dialog_view';
+import AlertView from './alert_view';
 
-export default function TableView({products}:{products:IProduct[]}) {
+export default function TableView(
+    {products, handleOpenAlert}
+    :{products:IProduct[], handleOpenAlert: any}
+) {
 
     /* Columnas */
     const columns = [
@@ -24,17 +26,6 @@ export default function TableView({products}:{products:IProduct[]}) {
         { id: 'Category', label: 'Categoría'},
         { id: 'actions', label: ''},
     ]
-
-    /* Eliminar un producto */
-    const deleteProduct = async(id: string) =>{
-        const res = await fetch(ELIMINAR_PRODUCTO+'/'+id, {method: 'delete'});
-        if(res.ok) {
-            const product = await res.json();
-            await console.log('product result:', product);
-            mutate(LISTAR_PRODUCTOS, products.filter(p => p._id !== id), false)
-        }
-        
-    }
 
     /* Paginación */
     const [page, setPage] = useState(0);
@@ -46,10 +37,12 @@ export default function TableView({products}:{products:IProduct[]}) {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
-    const emptyRows = rowsPerPage - Math.min(rowsPerPage, products.length - page * rowsPerPage)
+    const emptyRows = rowsPerPage == 5 || rowsPerPage == 7 
+        ? rowsPerPage - Math.min(rowsPerPage, products.length - page * rowsPerPage) : 0
 
     return (
         <div>
+
             <TableContainer>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
@@ -69,11 +62,8 @@ export default function TableView({products}:{products:IProduct[]}) {
                                     <TableCell>{product.NameProduct}</TableCell>
                                     <TableCell>{product.Category}</TableCell>
                                     <TableCell align="right" className="d-flex align-items-center">
-                                        <Button variant="contained" color="secondary" className="ml-2" 
-                                            onClick={() => deleteProduct(product._id)}>
-                                            Eliminar
-                                        </Button>
-                                        <DialogView product={product}></DialogView>
+                                        <AlertView id={product._id} name={product.NameProduct} handleOpenAlert={handleOpenAlert}></AlertView>
+                                        <DialogView product={product} handleOpenAlert={handleOpenAlert}></DialogView>
                                     </TableCell>
                                 </TableRow>
                             ))
@@ -87,7 +77,7 @@ export default function TableView({products}:{products:IProduct[]}) {
                 </Table>
             </TableContainer>
             <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
+                rowsPerPageOptions={[5, 7, 15, 25]}
                 component="div"
                 count={products.length}
                 rowsPerPage={rowsPerPage}

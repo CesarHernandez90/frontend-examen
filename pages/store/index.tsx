@@ -2,11 +2,15 @@
 import LayoutComponent from '../../components/layout_component';
 import TableView from '../../components/store/table_view';
 import DialogView from "../../components/store/dialog_view";
+import { LISTAR_PRODUCTOS } from "../../config/api"
 
 /* API */
-import { LISTAR_PRODUCTOS } from "../../config/api"
 import IProduct from '../../models/product';
+import { useState } from 'react';
 import useSWR from 'swr';
+import { Alert } from '@material-ui/lab';
+import { Collapse, IconButton } from "@material-ui/core";
+import CloseIcon from '@material-ui/icons/Close';
 
 import { Button, Typography } from "@material-ui/core";
 
@@ -16,6 +20,20 @@ export default function Store(
 ) {
     const {data} = useSWR(LISTAR_PRODUCTOS, {initialData: products});
 
+    /* Alert Functions */
+    const [message, setMessage] = useState('')
+    const [severity, setSeverity] = useState('success')
+
+    const [openAlert, setOpenAlert] = useState(false)
+    const handleOpenAlert = (message: string, severity: string) => {
+        setMessage(message)
+        setSeverity(severity)
+        setOpenAlert(true)
+    }
+    const handleCloseAlert = () => {
+        setOpenAlert(false)
+    }
+
     if(isError != null) return <p>Hubo un error al acceder a la ruta</p>
     if (isLoading) return <p>Cargando...</p>
     
@@ -24,10 +42,21 @@ export default function Store(
             <LayoutComponent>
                 <div className="d-flex justify-content-between align-items-center">
                     <Typography variant="h5">Productos</Typography>
-                    <DialogView></DialogView>
+                    <DialogView handleOpenAlert={handleOpenAlert}></DialogView>
                 </div>
                 <hr/>
-                <TableView products={data}></TableView>
+                <Collapse in={openAlert}>
+                    <Alert severity={severity as any} action={
+                        <IconButton
+                            aria-label="close"
+                            color="inherit"
+                            size="small"
+                            onClick={handleCloseAlert}>
+                            <CloseIcon fontSize="inherit"></CloseIcon>
+                        </IconButton>
+                    }>{message}</Alert>
+                </Collapse>
+                <TableView products={data} handleOpenAlert={handleOpenAlert}></TableView>
             </LayoutComponent>
         </div>
     );

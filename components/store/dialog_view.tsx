@@ -16,7 +16,7 @@ import { CREAR_PRODUCTO, EDITAR_PRODUCTO, LISTAR_PRODUCTOS } from "../../config/
 import IProduct from "../../models/product";
 
 export default function DialogView(
-    {product}:{product?:IProduct}) 
+    {product, handleOpenAlert}:{product?:IProduct, handleOpenAlert?:any}) 
 {
 
     /* Caché */
@@ -55,14 +55,27 @@ export default function DialogView(
                 headers: {'Content-Type': 'application/json'}
             })
             if(res.ok) {
-                const product = res.json();
+                const resProduct = await res.json();
                 if(product) {
+                    handleOpenAlert(
+                        'El registro ' + formik.values.NameProduct + ' fue actualizado',
+                        'info'
+                    );
                     trigger(LISTAR_PRODUCTOS)
                 } else {
-                    mutate(LISTAR_PRODUCTOS, [...data, product])
+                    handleOpenAlert(
+                        'Registro ' + formik.values.NameProduct + ' creado con éxito',
+                        'success'
+                    );
+                    mutate(LISTAR_PRODUCTOS, [...data, resProduct])
                 }
                 setOpen(false)
                 formik.resetForm()
+            } else {
+                handleOpenAlert(
+                    'Ocurrió un problema inesperado. Contacte al administrador',
+                    'error'
+                );
             }
         },
         validate: values => {
